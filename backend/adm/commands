@@ -1,0 +1,6 @@
+source ~/facerec_env/bin/activate
+
+psql -U meu_usuario -d reconhecimento_facial -h localhost
+
+SELECT id, nome_pessoa FROM pessoas;
+

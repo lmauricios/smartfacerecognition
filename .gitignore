@@ -1,0 +1,88 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod] # .pyc, .pyo, .pyd
+*$py.class # Jython
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller (embora não pareça que você esteja usando ainda, é bom ter)
+*.manifest
+*.spec
+
+# Wheel files (devem ser instalados via requirements.txt)
+*.whl
+
+# Environments (certifique-se que o nome corresponde ao seu diretório de venv DENTRO do projeto, se houver)
+# Se 'facerec_env' está FORA da pasta do projeto, esta linha não terá efeito sobre ele.
+# Estas são para ambientes virtuais que podem ser criados DENTRO da pasta do projeto.
+.env
+.venv
+venv/
+env/
+ENV/
+# Se você tem um diretório chamado 'facerec_env' DENTRO da raiz do projeto 'facerec/' que quer ignorar:
+/facerec_env/
+
+# IDE / Editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Dlib (deve ser instalado via requirements.txt)
+backend/dlib/
+
+# Model files (Decida se vai usar Git LFS, download externo, ou ignorar)
+# Se decidir ignorar e não usar LFS:
+backend/face_detector/res10_300x300_ssd_iter_140000.caffemodel
+backend/model/modelo_detector_mascara.h5
+# Você também pode usar wildcards se tiver mais arquivos assim:
+# backend/face_detector/*.caffemodel
+# backend/model/*.h5
+
+# Imagens de dataset ou geradas (Decida se vai usar Git LFS, download externo, ou ignorar)
+# `imagens_crud` parece ser para uploads ou resultados de CRUD, bom ignorar.
+backend/imagens_crud/
+# `imagens` pode conter seu dataset de treinamento/teste. Se for grande, ignore.
+# Se forem apenas algumas imagens de exemplo pequenas, pode remover a linha abaixo.
+backend/imagens/
+
+# Arquivos de log
+*.log
+
+# Terraform (específico para a pasta backend/terraform)
+backend/terraform/.terraform/
+backend/terraform/terraform.tfstate
+backend/terraform/terraform.tfstate.backup
+backend/terraform/.terraform.lock.hcl
+backend/terraform/*_crash.log
+# Adicione a linha abaixo se o seu terraform.tfvars contém segredos.
+# Crie um terraform.tfvars.example para versionar a estrutura sem os segredos.
+# backend/terraform/terraform.tfvars
+
+# Outros arquivos específicos do sistema operacional ou temporários
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
