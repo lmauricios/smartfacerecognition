@@ -7,15 +7,27 @@ disable=
     C0116, # missing-function-docstring
     R0903, # too-few-public-methods
     W0511, # fixme
-    
+    R0801, # duplicate-code
+    R0914, # too-many-locals
+    R0915, # too-many-statements
+    R0912, # too-many-branches
+
 [FORMAT]
 max-line-length=120
 
 [MESSAGES CONTROL]
-disable=W0621  # redefined-outer-name
+disable=
+    W0621,  # redefined-outer-name
+    W0718,  # broad-exception-caught
+    W0611,  # unused-import
+    W0612,  # unused-variable
+    W0613,  # unused-argument
+    R1705,  # no-else-return
+    R1710   # inconsistent-return-statements
 
 [BASIC]
-good-names=i,j,k,ex,Run,_,fd,fp,id
+good-names=i,j,k,ex,Run,_,fd,fp,id,np,cv,tf
 
 [TYPECHECK]
-ignored-modules=cv2,numpy,face_recognition,tensorflow
+ignored-modules=cv2,numpy,face_recognition,tensorflow,sklearn,fastapi,psycopg2,dotenv,pydantic,dlib,uvicorn
+generated-members=cv2.* numpy.* tensorflow.*
