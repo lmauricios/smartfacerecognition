@@ -1,6 +1,7 @@
 import logging
 import sys
 
+
 def setup_logging(level=logging.INFO):
     """Configura o logging básico para a aplicação."""
     logger = logging.getLogger("facerec_backend")
@@ -13,5 +14,6 @@ def setup_logging(level=logging.INFO):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger
+
 
 log = setup_logging()

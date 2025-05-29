@@ -9,26 +9,26 @@ import numpy as np
 from datetime import datetime
 from detect_mask import detectar_mascara
 
-conn = psycopg2.connect(
-    host="localhost",
-    database="reconhecimento_facial",
-    user="meu_usuario",
-    password="Innovate@V8"
-)
+conn = psycopg2.connect(host="localhost", database="reconhecimento_facial", user="meu_usuario", password="Innovate@V8")
 cur = conn.cursor()
+
 
 # Função para salvar logs
 def salvar_log(diretorio_log, conteudo_log):
     with open(f"{diretorio_log}/log.txt", "a") as log_file:
         log_file.write(conteudo_log + "\n")
 
+
 # Ajusta os pontos faciais para focar apenas nas áreas dos olhos e testa
 def ajustar_areas_com_mascara(face_landmarks_list):
     ajustados = []
     for face_landmarks in face_landmarks_list:
-        eyes_and_forehead = {key: face_landmarks[key] for key in ['left_eye', 'right_eye', 'left_eyebrow', 'right_eyebrow']}
+        eyes_and_forehead = {
+            key: face_landmarks[key] for key in ["left_eye", "right_eye", "left_eyebrow", "right_eyebrow"]
+        }
         ajustados.append(eyes_and_forehead)
     return ajustados
+
 
 # Reconhecimento facial com logs e armazenamento de imagem processada
 def reconhecimento_facial():
@@ -39,7 +39,7 @@ def reconhecimento_facial():
         print("Nenhuma imagem selecionada.")
         messagebox.showerror("Erro", "Nenhuma imagem foi selecionada!")
         return
-    
+
     # Criar diretório de log baseado no timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     diretorio_log = f"log_reconhecimento_{timestamp}"
@@ -49,14 +49,14 @@ def reconhecimento_facial():
     log_content = f"Carregando imagem desconhecida: {caminho_foto}"
     print(log_content)
     salvar_log(diretorio_log, log_content)
-    
+
     imagem_desconhecida = face_recognition.load_image_file(caminho_foto)
 
     # Detectar se a pessoa está usando máscara
     log_content = f"Verificando se a pessoa está usando máscara na imagem: {caminho_foto}"
     print(log_content)
     salvar_log(diretorio_log, log_content)
-    
+
     tem_mascara = detectar_mascara(caminho_foto)
 
     if tem_mascara == 0:
@@ -106,7 +106,7 @@ def reconhecimento_facial():
     salvar_log(diretorio_log, log_content)
 
     # Desenhar retângulo verde na imagem de entrada
-    for (top, right, bottom, left) in face_locations_desconhecidos:
+    for top, right, bottom, left in face_locations_desconhecidos:
         cv2.rectangle(imagem_entrada_limpa, (left, top), (right, bottom), (0, 255, 0), 2)
 
     # Detectar os pontos faciais na imagem de entrada
@@ -132,7 +132,7 @@ def reconhecimento_facial():
     for nome_pessoa, foto in pessoas:
         # Salvar a foto temporariamente para processar com face_recognition
         temp_image_path = "temp_image.jpg"
-        with open(temp_image_path, 'wb') as f:
+        with open(temp_image_path, "wb") as f:
             f.write(foto)
 
         # Carregar a imagem da pessoa no banco de dados
@@ -145,7 +145,9 @@ def reconhecimento_facial():
         tolerancia = 0.6
 
         # Comparar o rosto com a tolerância
-        resultado = face_recognition.compare_faces([encodings_conhecidos], encodings_desconhecidos, tolerance=tolerancia)
+        resultado = face_recognition.compare_faces(
+            [encodings_conhecidos], encodings_desconhecidos, tolerance=tolerancia
+        )
 
         if resultado[0]:
             log_content = f"Pessoa reconhecida: {nome_pessoa} com {similaridade:.2f}% de similaridade."
@@ -163,7 +165,7 @@ def reconhecimento_facial():
             salvar_log(diretorio_log, log_content)
 
             # Desenhar retângulo verde ao redor do rosto reconhecido
-            for (top, right, bottom, left) in face_locations:
+            for top, right, bottom, left in face_locations:
                 cv2.rectangle(img, (left, top), (right, bottom), (0, 255, 0), 2)
 
             # Detectar os pontos faciais (landmarks)
@@ -171,7 +173,7 @@ def reconhecimento_facial():
 
             if tem_mascara == 0:
                 face_landmarks_list = ajustar_areas_com_mascara(face_landmarks_list)  # script se adapta para máscara
-            
+
             # Desenhar os pontos faciais
             for face_landmarks in face_landmarks_list:
                 for landmark_name, points in face_landmarks.items():
@@ -212,7 +214,7 @@ def reconhecimento_facial():
             print(log_content)
             salvar_log(diretorio_log, log_content)
             return
-    
+
     log_content = "Nenhuma correspondência encontrada."
     print(log_content)
     salvar_log(diretorio_log, log_content)
@@ -221,6 +223,7 @@ def reconhecimento_facial():
     log_content = f"Tempo total de processamento: {tempo_fim - tempo_inicio:.2f} segundos"
     print(log_content)
     salvar_log(diretorio_log, log_content)
+
 
 # Interface gráfica com Tkinter (apenas para reconhecimento facial)
 root = tk.Tk()

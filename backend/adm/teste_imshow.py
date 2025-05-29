@@ -5,7 +5,7 @@ import pickle
 
 # Configuração do cliente para se conectar ao servidor de vídeo no Windows
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect(('192.168.101.73', 8080))  # Substitua pelo IP do Windows
+client_socket.connect(("192.168.101.73", 8080))  # Substitua pelo IP do Windows
 
 data = b""
 payload_size = struct.calcsize("L")
@@ -30,7 +30,7 @@ while True:
     frame = pickle.loads(frame_data)
     cv2.imshow("Stream de Vídeo", frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 client_socket.close()

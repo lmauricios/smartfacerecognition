@@ -2,11 +2,12 @@ import psycopg2
 from psycopg2 import sql
 from psycopg2.extras import RealDictCursor
 import numpy as np
-import cv2 # Para decodificar imagem para obter encoding
-import face_recognition # Para obter encoding
+import cv2  # Para decodificar imagem para obter encoding
+import face_recognition  # Para obter encoding
 
 from utils.config import settings
 from utils.logger_config import log
+
 
 class DatabaseManager:
     def __init__(self):
@@ -51,7 +52,7 @@ class DatabaseManager:
             if not encodings:
                 log.warning(f"Nenhum encoding facial encontrado na imagem para {name}.")
                 return False
-            
+
             # Usar o primeiro encoding encontrado
             face_encoding_binary = psycopg2.Binary(encodings[0].tobytes())
 
@@ -62,14 +63,15 @@ class DatabaseManager:
                 #     ALTER TABLE pessoas ADD COLUMN face_encoding BYTEA;
                 cur.execute(
                     "INSERT INTO pessoas (nome_pessoa, face_encoding) VALUES (%s, %s) ON CONFLICT (nome_pessoa) DO UPDATE SET face_encoding = EXCLUDED.face_encoding",
-                    (name, face_encoding_binary)
+                    (name, face_encoding_binary),
                 )
                 conn.commit()
             log.info(f"Pessoa '{name}' adicionada/atualizada no banco de dados com novo encoding.")
             return True
         except psycopg2.Error as e:
             log.error(f"Erro de banco de dados ao adicionar pessoa '{name}': {e}")
-            if self._conn: self._conn.rollback()
+            if self._conn:
+                self._conn.rollback()
         except Exception as e:
             log.error(f"Erro inesperado ao adicionar pessoa '{name}': {e}")
         return False

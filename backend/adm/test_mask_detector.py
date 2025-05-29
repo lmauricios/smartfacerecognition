@@ -2,7 +2,8 @@ import tensorflow as tf
 import cv2
 import numpy as np
 
-modelo = tf.keras.models.load_model('model/modelo_detector_mascara.h5')
+modelo = tf.keras.models.load_model("model/modelo_detector_mascara.h5")
+
 
 def detectar_mascara(imagem_caminho):
     imagem = cv2.imread(imagem_caminho)
@@ -21,7 +22,8 @@ def detectar_mascara(imagem_caminho):
     classe_prevista = np.argmax(predicoes)
     return classe_prevista
 
-caminho_imagem = 'imagens/Screenshot_5.jpg'
+
+caminho_imagem = "imagens/Screenshot_5.jpg"
 resultado = detectar_mascara(caminho_imagem)
 
 if resultado == 0:

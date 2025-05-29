@@ -8,18 +8,15 @@ import time
 import numpy as np
 from datetime import datetime
 
-conn = psycopg2.connect(
-    host="localhost",
-    database="reconhecimento_facial",
-    user="meu_usuario",
-    password="Innovate@V8"
-)
+conn = psycopg2.connect(host="localhost", database="reconhecimento_facial", user="meu_usuario", password="Innovate@V8")
 cur = conn.cursor()
+
 
 # salvar logs
 def salvar_log(diretorio_log, conteudo_log):
     with open(f"{diretorio_log}/log.txt", "a") as log_file:
         log_file.write(conteudo_log + "\n")
+
 
 # reconhecimento facial com logs e armazenamento de imagem processada
 def reconhecimento_facial():
@@ -63,7 +60,7 @@ def reconhecimento_facial():
     print(log_content)
 
     # desenhar retângulo verde na imagem de entrada
-    for (top, right, bottom, left) in face_locations_desconhecidos:
+    for top, right, bottom, left in face_locations_desconhecidos:
         cv2.rectangle(imagem_entrada_limpa, (left, top), (right, bottom), (0, 255, 0), 2)
 
     # detectar os pontos faciais na imagem de entrada
@@ -87,7 +84,7 @@ def reconhecimento_facial():
     for nome_pessoa, foto in pessoas:
         # salvar a foto temporariamente para processar com face_recognition
         temp_image_path = "temp_image.jpg"
-        with open(temp_image_path, 'wb') as f:
+        with open(temp_image_path, "wb") as f:
             f.write(foto)
 
         # carregar a imagem da pessoa no banco de dados
@@ -102,7 +99,9 @@ def reconhecimento_facial():
         tolerancia = 0.6
 
         # comparar o rosto com a tolerância
-        resultado = face_recognition.compare_faces([encodings_conhecidos], encodings_desconhecidos, tolerance=tolerancia)
+        resultado = face_recognition.compare_faces(
+            [encodings_conhecidos], encodings_desconhecidos, tolerance=tolerancia
+        )
 
         if resultado[0]:
             log_content = f"Pessoa reconhecida: {nome_pessoa} com {similaridade:.2f}% de similaridade."
@@ -118,7 +117,7 @@ def reconhecimento_facial():
             print(f"Imagem 'limpa' salva como: {nome_arquivo_limpo}")
 
             # desenhar retângulo verde ao redor do rosto reconhecido
-            for (top, right, bottom, left) in face_locations:
+            for top, right, bottom, left in face_locations:
                 cv2.rectangle(img, (left, top), (right, bottom), (0, 255, 0), 2)
 
             # detectar os pontos faciais (landmarks)
@@ -160,7 +159,7 @@ def reconhecimento_facial():
             salvar_log(diretorio_log, log_content)
             print(log_content)
             return
-    
+
     log_content = "Nenhuma correspondência encontrada."
     salvar_log(diretorio_log, log_content)
     print(log_content)
@@ -169,6 +168,7 @@ def reconhecimento_facial():
     log_content = f"Tempo total de processamento: {tempo_fim - tempo_inicio:.2f} segundos"
     salvar_log(diretorio_log, log_content)
     print(log_content)
+
 
 # Interface gráfica com Tkinter (apenas para reconhecimento facial)
 root = tk.Tk()
