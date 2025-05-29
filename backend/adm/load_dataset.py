@@ -1,13 +1,15 @@
 import os
+from typing import List
+
 import cv2
 import numpy as np
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.model_selection import train_test_split
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.utils import to_categorical
 
 # Caminho para o dataset
 dataset_dir = "imagens/dataset"
-categories = ['with_mask', 'without_mask']
+categories = ["with_mask", "without_mask"]
 
 data = []
 labels = []
@@ -15,10 +17,12 @@ labels = []
 # Tamanho que será redimensionado para os modelos
 img_size = 128  # Usar tamanho menor para evitar sobrecarga de memória
 
+
 # Função para verificar se o arquivo é uma imagem válida
 def is_valid_image(file_path):
-    valid_extensions = ['.jpg', '.jpeg', '.png']  # Extensões de imagem permitidas
+    valid_extensions = [".jpg", ".jpeg", ".png"]  # Extensões de imagem permitidas
     return os.path.splitext(file_path)[1].lower() in valid_extensions
+
 
 # Função para excluir arquivos inválidos
 def remove_invalid_file(file_path):
@@ -27,6 +31,7 @@ def remove_invalid_file(file_path):
         print(f"Arquivo inválido removido: {file_path}")
     except Exception as e:
         print(f"Erro ao tentar remover o arquivo {file_path}: {e}")
+
 
 for category in categories:
     path = os.path.join(dataset_dir, category)

@@ -1,0 +1,39 @@
+[MASTER]
+init-hook='import sys; sys.path.append("backend")'
+disable=
+    C0111, # missing-docstring
+    C0103, # invalid-name
+    C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    C0116, # missing-function-docstring
+    R0903, # too-few-public-methods
+    W0511, # fixme
+    R0801, # duplicate-code
+    R0914, # too-many-locals
+    R0915, # too-many-statements
+    R0912, # too-many-branches
+    C0412, # ungrouped-imports
+    C0411  # wrong-import-order
+
+[FORMAT]
+max-line-length=120
+
+[MESSAGES CONTROL]
+disable=
+    W0621,  # redefined-outer-name
+    W0718,  # broad-exception-caught
+    W0611,  # unused-import
+    W0612,  # unused-variable
+    W0613,  # unused-argument
+    R1705,  # no-else-return
+    R1710,  # inconsistent-return-statements
+    W1514,  # unspecified-encoding
+    C0301,  # line-too-long
+    W1203   # logging-fstring-interpolation
+
+[BASIC]
+good-names=i,j,k,ex,Run,_,fd,fp,id,np,cv,tf
+
+[TYPECHECK]
+ignored-modules=cv2,numpy,face_recognition,tensorflow,sklearn,fastapi,psycopg2,dotenv,pydantic,dlib,uvicorn
+generated-members=cv2.* numpy.* tensorflow.*

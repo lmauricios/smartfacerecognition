@@ -2,24 +2,25 @@ import psycopg2
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
-import io # Adicionado para manipulação de imagem em memória
-import cv2 # Necessário para decodificar imagem para face_recognition
-import face_recognition # Necessário para extrair encodings
-import numpy as np # Necessário para manipulação de array de imagem
-import os # Para o exemplo de variáveis de ambiente (opcional)
+import io  # Adicionado para manipulação de imagem em memória
+import cv2  # Necessário para decodificar imagem para face_recognition
+import face_recognition  # Necessário para extrair encodings
+import numpy as np  # Necessário para manipulação de array de imagem
+import os  # Para o exemplo de variáveis de ambiente (opcional)
 
 # --- Configurações do Banco de Dados ---
 # Idealmente, use variáveis de ambiente ou um arquivo de config seguro
 DB_HOST = os.environ.get("DB_HOST", "localhost")
 DB_NAME = os.environ.get("DB_NAME", "reconhecimento_facial")
 DB_USER = os.environ.get("DB_USER", "meu_usuario")
-DB_PASS = os.environ.get("DB_PASS", "Innovate@V8") # Mantenha senhas fora do código em produção
+DB_PASS = os.environ.get("DB_PASS", "Innovate@V8")  # Mantenha senhas fora do código em produção
 
 # Diretório para salvar as imagens originais do CRUD
 CRUD_IMAGES_DIR = "imagens_crud"
 
 conn = None
 cur = None
+
 
 def setup_db_connection():
     """Estabelece a conexão com o banco de dados."""
@@ -33,6 +34,7 @@ def setup_db_connection():
         messagebox.showerror("Erro de Conexão", f"Não foi possível conectar ao banco de dados: {e}")
         return False
 
+
 def close_db_connection():
     """Fecha a conexão com o banco de dados."""
     global conn, cur
@@ -42,6 +44,7 @@ def close_db_connection():
     if conn:
         conn.close()
         print("Conexão com o banco de dados fechada.")
+
 
 def inserir_pessoa():
     if not cur:
@@ -58,9 +61,9 @@ def inserir_pessoa():
                 os.makedirs(CRUD_IMAGES_DIR)
 
             # Ler a imagem para extrair o encoding
-            with open(caminho_foto, 'rb') as file:
+            with open(caminho_foto, "rb") as file:
                 image_bytes = file.read()
-            
+
             nparr = np.frombuffer(image_bytes, np.uint8)
             img_bgr = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
@@ -74,32 +77,36 @@ def inserir_pessoa():
             if not encodings:
                 messagebox.showwarning("Aviso", f"Nenhum encoding facial encontrado na imagem para {nome}.")
                 return
-            
+
             face_encoding_binary = psycopg2.Binary(encodings[0].tobytes())
-            
+
             # Salvar a imagem original localmente para o CRUD
             _, ext = os.path.splitext(caminho_foto)
-            nome_arquivo_crud = f"{nome.replace(' ', '_')}_{int(np.random.randint(1000, 9999))}{ext}" # Nome de arquivo único simples
+            nome_arquivo_crud = (
+                f"{nome.replace(' ', '_')}_{int(np.random.randint(1000, 9999))}{ext}"  # Nome de arquivo único simples
+            )
             caminho_imagem_crud_salva = os.path.join(CRUD_IMAGES_DIR, nome_arquivo_crud)
-            with open(caminho_imagem_crud_salva, 'wb') as f_out:
+            with open(caminho_imagem_crud_salva, "wb") as f_out:
                 f_out.write(image_bytes)
 
-            cur.execute( # Adicionada a coluna imagem_path
+            cur.execute(  # Adicionada a coluna imagem_path
                 "INSERT INTO pessoas (nome_pessoa, face_encoding, imagem_path) VALUES (%s, %s, %s) ON CONFLICT (nome_pessoa) DO UPDATE SET face_encoding = EXCLUDED.face_encoding, imagem_path = EXCLUDED.imagem_path",
-                (nome, face_encoding_binary, caminho_imagem_crud_salva)
+                (nome, face_encoding_binary, caminho_imagem_crud_salva),
             )
             conn.commit()
             messagebox.showinfo("Sucesso", f"Pessoa '{nome}' inserida/atualizada com encoding facial!")
-            nome_entry.delete(0, tk.END) 
+            nome_entry.delete(0, tk.END)
         except FileNotFoundError:
             messagebox.showerror("Erro", f"Arquivo não encontrado: {caminho_foto}")
         except psycopg2.Error as e:
-            if conn: conn.rollback()
+            if conn:
+                conn.rollback()
             messagebox.showerror("Erro de Banco de Dados", f"Erro ao inserir pessoa: {e}")
         except Exception as e:
             messagebox.showerror("Erro Inesperado", f"Ocorreu um erro: {e}")
     else:
         messagebox.showerror("Erro", "Nome ou foto ausente!")
+
 
 def buscar_pessoa():
     if not cur:
@@ -112,32 +119,38 @@ def buscar_pessoa():
         return
 
     try:
-        cur.execute("SELECT nome_pessoa, imagem_path FROM pessoas WHERE nome_pessoa = %s", (nome,)) # Buscar imagem_path
+        cur.execute(
+            "SELECT nome_pessoa, imagem_path FROM pessoas WHERE nome_pessoa = %s", (nome,)
+        )  # Buscar imagem_path
         pessoa = cur.fetchone()
-        
+
         if pessoa:
             nome_pessoa_db, caminho_imagem_crud = pessoa
             if caminho_imagem_crud and os.path.exists(caminho_imagem_crud):
                 img = Image.open(caminho_imagem_crud)
-                img.thumbnail((200, 200)) 
+                img.thumbnail((200, 200))
                 img_tk = ImageTk.PhotoImage(img)
-                
+
                 img_label.config(image=img_tk)
-                img_label.image = img_tk 
+                img_label.image = img_tk
                 messagebox.showinfo("Pessoa Encontrada", f"Pessoa: {nome_pessoa_db}")
             else:
                 img_label.config(image=None)
                 img_label.image = None
-                messagebox.showinfo("Pessoa Encontrada", f"Pessoa: {nome_pessoa_db}\n(Imagem original não encontrada ou não registrada para o CRUD)")
+                messagebox.showinfo(
+                    "Pessoa Encontrada",
+                    f"Pessoa: {nome_pessoa_db}\n(Imagem original não encontrada ou não registrada para o CRUD)",
+                )
 
         else:
             messagebox.showinfo("Informação", "Pessoa não encontrada.")
-            img_label.config(image=None) # Limpar imagem anterior
+            img_label.config(image=None)  # Limpar imagem anterior
             img_label.image = None
     except psycopg2.Error as e:
         messagebox.showerror("Erro de Banco de Dados", f"Erro ao buscar pessoa: {e}")
     except Exception as e:
         messagebox.showerror("Erro Inesperado", f"Ocorreu um erro ao buscar: {e}")
+
 
 def deletar_pessoa():
     if not cur:
@@ -165,20 +178,23 @@ def deletar_pessoa():
                     except OSError as e_file:
                         print(f"Erro ao deletar arquivo de imagem local {resultado_path[0]}: {e_file}")
                 messagebox.showinfo("Sucesso", f"Pessoa '{nome}' excluída com sucesso!")
-                nome_entry.delete(0, tk.END) # Limpa o campo nome
-                img_label.config(image=None) # Limpar imagem
+                nome_entry.delete(0, tk.END)  # Limpa o campo nome
+                img_label.config(image=None)  # Limpar imagem
                 img_label.image = None
         except psycopg2.Error as e:
-            if conn: conn.rollback()
+            if conn:
+                conn.rollback()
             messagebox.showerror("Erro de Banco de Dados", f"Erro ao deletar pessoa: {e}")
         except Exception as e:
             messagebox.showerror("Erro Inesperado", f"Ocorreu um erro ao deletar: {e}")
+
 
 def on_closing():
     """Função chamada ao fechar a janela."""
     if messagebox.askokcancel("Sair", "Você quer sair da aplicação?"):
         close_db_connection()
         root.destroy()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
@@ -201,7 +217,7 @@ if __name__ == "__main__":
     btn_deletar = tk.Button(root, text="Deletar Pessoa", command=deletar_pessoa)
     btn_deletar.grid(row=1, column=2, padx=5, pady=10, sticky="ew")
 
-    img_label = tk.Label(root) # Para exibir a imagem
+    img_label = tk.Label(root)  # Para exibir a imagem
     img_label.grid(row=2, column=0, columnspan=3, padx=5, pady=10)
 
     # Configura o fechamento da janela para chamar on_closing
@@ -213,7 +229,7 @@ if __name__ == "__main__":
         btn_buscar.config(state=tk.DISABLED)
         btn_deletar.config(state=tk.DISABLED)
         # A mensagem de erro já foi exibida por setup_db_connection()
-        # messagebox.showwarning("Aviso de Banco de Dados", 
+        # messagebox.showwarning("Aviso de Banco de Dados",
         #                        "Não foi possível conectar ao banco. As funcionalidades estarão limitadas.")
 
     # Configura a expansão das colunas para preencher o espaço

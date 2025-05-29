@@ -2,7 +2,8 @@ import tensorflow as tf
 import cv2
 import numpy as np
 
-modelo_mascara = tf.keras.models.load_model('model/modelo_detector_mascara.h5')
+modelo_mascara = tf.keras.models.load_model("model/modelo_detector_mascara.h5")
+
 
 def detectar_mascara(imagem_caminho):
     imagem = cv2.imread(imagem_caminho)

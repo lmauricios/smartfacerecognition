@@ -5,9 +5,10 @@ import os
 
 from utils.logger_config import log
 
+
 class FaceProcessor:
     DNN_CONFIDENCE_THRESHOLD = 0.6  # Aumentado um pouco para robustez
-    FACE_REC_TOLERANCE = 0.55       # Ajustado para ser um pouco mais estrito
+    FACE_REC_TOLERANCE = 0.55  # Ajustado para ser um pouco mais estrito
     MIN_SIMILARITY_AT_TOLERANCE = 60.0
 
     def __init__(self, model_dir="face_detector"):
@@ -21,17 +22,17 @@ class FaceProcessor:
         try:
             proto_path = os.path.join(model_dir, "deploy.prototxt")
             model_path = os.path.join(model_dir, "res10_300x300_ssd_iter_140000.caffemodel")
-            
+
             if not (os.path.exists(proto_path) and os.path.exists(model_path)):
-                log.error(f"Arquivos de modelo não encontrados. Verifique os caminhos: {proto_path}, {model_path}")
+                log.error("Arquivos de modelo não encontrados. Verifique os caminhos: %s, %s", proto_path, model_path)
                 return None
-            
+
             log.info("Carregando modelo de detecção de faces (OpenCV DNN)...")
             face_net = cv2.dnn.readNet(proto_path, model_path)
             log.info("Modelo de detecção de faces carregado com sucesso.")
             return face_net
         except cv2.error as e:
-            log.error(f"Erro ao carregar o modelo de detecção de faces OpenCV DNN: {e}")
+            log.error("Erro ao carregar o modelo de detecção de faces OpenCV DNN: %s", str(e))
             return None
 
     def get_face_encodings_from_image_bytes(self, image_bytes: bytes) -> list:
@@ -49,7 +50,7 @@ class FaceProcessor:
             blob = cv2.dnn.blobFromImage(img_rgb, 1.0, (300, 300), (104.0, 177.0, 123.0))
             self.face_net.setInput(blob)
             detections = self.face_net.forward()
-            
+
             face_locations_dnn = []
             for i in range(0, detections.shape[2]):
                 confidence = detections[0, 0, i, 2]
@@ -64,10 +65,10 @@ class FaceProcessor:
                 return []
 
             encodings = face_recognition.face_encodings(img_rgb, known_face_locations=face_locations_dnn)
-            log.info(f"Extraídos {len(encodings)} encodings da imagem.")
+            log.info("Extraídos %d encodings da imagem.", len(encodings))
             return encodings
         except Exception as e:
-            log.error(f"Erro ao extrair encodings da imagem: {e}")
+            log.error("Erro ao extrair encodings da imagem: %s", str(e))
             return []
 
     def recognize_faces_in_frame(self, frame_bgr: np.ndarray, known_encodings: list, known_names: list) -> list:
@@ -87,21 +88,26 @@ class FaceProcessor:
                 box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                 (startX, startY, endX, endY) = box.astype("int")
                 face_roi_bgr = frame_bgr[startY:endY, startX:endX]
-                if face_roi_bgr.size == 0: continue
-                
+                if face_roi_bgr.size == 0:
+                    continue
+
                 face_roi_rgb = cv2.cvtColor(face_roi_bgr, cv2.COLOR_BGR2RGB)
                 current_encodings = face_recognition.face_encodings(face_roi_rgb)
 
                 if current_encodings:
                     current_encoding = current_encodings[0]
-                    matches = face_recognition.compare_faces(known_encodings, current_encoding, tolerance=self.FACE_REC_TOLERANCE)
+                    matches = face_recognition.compare_faces(
+                        known_encodings, current_encoding, tolerance=self.FACE_REC_TOLERANCE
+                    )
                     face_distances = face_recognition.face_distance(known_encodings, current_encoding)
-                    
-                    if True in matches: # Se houve algum match
+
+                    if True in matches:  # Se houve algum match
                         best_match_index = np.argmin(face_distances)
                         if matches[best_match_index]:
                             name = known_names[best_match_index]
-                            similarity = (1 - face_distances[best_match_index]) * 100 # Similaridade simples
-                            results.append({"name": name, "box": [startX, startY, endX, endY], "similarity": similarity})
+                            similarity = (1 - face_distances[best_match_index]) * 100  # Similaridade simples
+                            results.append(
+                                {"name": name, "box": [startX, startY, endX, endY], "similarity": similarity}
+                            )
                             log.debug(f"Face reconhecida: {name} com similaridade {similarity:.2f}%")
         return results
