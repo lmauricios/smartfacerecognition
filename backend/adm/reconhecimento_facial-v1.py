@@ -8,8 +8,19 @@ import cv2
 import face_recognition
 import numpy as np
 import psycopg2
+from dotenv import load_dotenv
+import os
 
-conn = psycopg2.connect(host="localhost", database="reconhecimento_facial", user="meu_usuario", password="Innovate@V8")
+# Carrega variáveis de ambiente
+load_dotenv()
+
+# Conecta ao banco de dados usando variáveis de ambiente
+conn = psycopg2.connect(
+    host=os.getenv("DB_HOST"),
+    database=os.getenv("DB_NAME"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASS")
+)
 cur = conn.cursor()
 
 

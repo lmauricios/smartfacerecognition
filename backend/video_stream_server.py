@@ -1,11 +1,14 @@
 import cv2
 import socket
 import struct
-import pickle
-import time  # Para adicionar um pequeno delay em caso de erro na captura
+import json
+import base64
+import time
+import cv2
+import numpy as np
 
 # --- Configurações ---
-HOST = "0.0.0.0"  # Escuta em todas as interfaces disponíveis
+HOST = "127.0.0.1"  # Localhost apenas
 PORT = 8080  # Porta para o servidor de stream
 CAMERA_INDEX = 0  # Índice da câmera (0 geralmente é a padrão)
 
