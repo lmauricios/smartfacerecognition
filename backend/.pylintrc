@@ -1,0 +1,21 @@
+[MASTER]
+disable=
+    C0111, # missing-docstring
+    C0103, # invalid-name
+    C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    C0116, # missing-function-docstring
+    R0903, # too-few-public-methods
+    W0511, # fixme
+    
+[FORMAT]
+max-line-length=120
+
+[MESSAGES CONTROL]
+disable=W0621  # redefined-outer-name
+
+[BASIC]
+good-names=i,j,k,ex,Run,_,fd,fp,id
+
+[TYPECHECK]
+ignored-modules=cv2,numpy,face_recognition,tensorflow
