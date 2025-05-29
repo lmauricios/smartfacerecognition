@@ -28,7 +28,8 @@ disable=
     R1705,  # no-else-return
     R1710,  # inconsistent-return-statements
     W1514,  # unspecified-encoding
-    C0301   # line-too-long
+    C0301,  # line-too-long
+    W1203   # logging-fstring-interpolation
 
 [BASIC]
 good-names=i,j,k,ex,Run,_,fd,fp,id,np,cv,tf

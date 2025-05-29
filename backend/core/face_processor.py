@@ -24,7 +24,7 @@ class FaceProcessor:
             model_path = os.path.join(model_dir, "res10_300x300_ssd_iter_140000.caffemodel")
 
             if not (os.path.exists(proto_path) and os.path.exists(model_path)):
-                log.error(f"Arquivos de modelo não encontrados. Verifique os caminhos: {proto_path}, {model_path}")
+                log.error("Arquivos de modelo não encontrados. Verifique os caminhos: %s, %s", proto_path, model_path)
                 return None
 
             log.info("Carregando modelo de detecção de faces (OpenCV DNN)...")
@@ -32,7 +32,7 @@ class FaceProcessor:
             log.info("Modelo de detecção de faces carregado com sucesso.")
             return face_net
         except cv2.error as e:
-            log.error(f"Erro ao carregar o modelo de detecção de faces OpenCV DNN: {e}")
+            log.error("Erro ao carregar o modelo de detecção de faces OpenCV DNN: %s", str(e))
             return None
 
     def get_face_encodings_from_image_bytes(self, image_bytes: bytes) -> list:
@@ -65,10 +65,10 @@ class FaceProcessor:
                 return []
 
             encodings = face_recognition.face_encodings(img_rgb, known_face_locations=face_locations_dnn)
-            log.info(f"Extraídos {len(encodings)} encodings da imagem.")
+            log.info("Extraídos %d encodings da imagem.", len(encodings))
             return encodings
         except Exception as e:
-            log.error(f"Erro ao extrair encodings da imagem: {e}")
+            log.error("Erro ao extrair encodings da imagem: %s", str(e))
             return []
 
     def recognize_faces_in_frame(self, frame_bgr: np.ndarray, known_encodings: list, known_names: list) -> list:

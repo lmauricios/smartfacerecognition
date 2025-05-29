@@ -29,7 +29,7 @@ async def register_person_endpoint(
     image: UploadFile = File(...),
     service: RecognitionService = Depends(get_recognition_service_dependency),
 ):
-    log.info(f"Recebida requisição para registrar: {name} com imagem: {image.filename}")
+    log.info("Recebida requisição para registrar: %s com imagem: %s", name, image.filename)
     image_bytes = await image.read()
     result = service.register_new_person(name, image_bytes)
     if "error" in result:
@@ -41,7 +41,7 @@ async def register_person_endpoint(
 async def identify_faces_endpoint(
     image: UploadFile = File(...), service: RecognitionService = Depends(get_recognition_service_dependency)
 ):
-    log.info(f"Recebida requisição para identificar faces na imagem: {image.filename}")
+    log.info("Recebida requisição para identificar faces na imagem: %s", image.filename)
     image_bytes = await image.read()
     results = service.identify_faces_in_image(image_bytes)
     # Se results for uma lista vazia ou contiver um erro/info, o cliente lida com isso.
