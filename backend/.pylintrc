@@ -1,4 +1,5 @@
 [MASTER]
+init-hook='import sys; sys.path.append("backend")'
 disable=
     C0111, # missing-docstring
     C0103, # invalid-name
@@ -11,6 +12,8 @@ disable=
     R0914, # too-many-locals
     R0915, # too-many-statements
     R0912, # too-many-branches
+    C0412, # ungrouped-imports
+    C0411  # wrong-import-order
 
 [FORMAT]
 max-line-length=120
@@ -23,7 +26,9 @@ disable=
     W0612,  # unused-variable
     W0613,  # unused-argument
     R1705,  # no-else-return
-    R1710   # inconsistent-return-statements
+    R1710,  # inconsistent-return-statements
+    W1514,  # unspecified-encoding
+    C0301   # line-too-long
 
 [BASIC]
 good-names=i,j,k,ex,Run,_,fd,fp,id,np,cv,tf

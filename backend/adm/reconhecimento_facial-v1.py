@@ -1,12 +1,13 @@
-import psycopg2
-import face_recognition
-import cv2
 import os
+import time
+from datetime import datetime
 import tkinter as tk
 from tkinter import filedialog, messagebox
-import time
+
+import cv2
+import face_recognition
 import numpy as np
-from datetime import datetime
+import psycopg2
 
 conn = psycopg2.connect(host="localhost", database="reconhecimento_facial", user="meu_usuario", password="Innovate@V8")
 cur = conn.cursor()
@@ -14,7 +15,7 @@ cur = conn.cursor()
 
 # salvar logs
 def salvar_log(diretorio_log, conteudo_log):
-    with open(f"{diretorio_log}/log.txt", "a") as log_file:
+    with open(f"{diretorio_log}/log.txt", "a", encoding="utf-8") as log_file:
         log_file.write(conteudo_log + "\n")
 
 
